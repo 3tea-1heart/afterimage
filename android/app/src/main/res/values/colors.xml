@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF5C3F</color>
+    <color name="colorPrimaryDark">#15121A</color>
+    <color name="colorAccent">#DCF269</color>
+    <color name="afterimageInk">#15121A</color>
+</resources>

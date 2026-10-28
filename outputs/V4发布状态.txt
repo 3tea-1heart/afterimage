@@ -1,0 +1,4 @@
+线上发布成功（仅所有者访问）：
+https://afterimage-studio-victus.starry-globe-7276.chatgpt.site
+发布时间：2026-10-26
+本地预览服务当前未运行，请双击 Start-Afterimage.cmd 启动。

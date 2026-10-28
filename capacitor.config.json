@@ -1,0 +1,13 @@
+{
+  "appId": "studio.afterimage.app",
+  "appName": "余像 AFTERIMAGE",
+  "webDir": "outputs/afterimage-studio/dist",
+  "backgroundColor": "#15121a",
+  "android": {
+    "backgroundColor": "#15121a",
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

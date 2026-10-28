@@ -1,0 +1,29 @@
+# 系统与工具产物
+node_modules/
+release/
+.gradle/
+*.log
+*.zip
+*.tar.gz
+
+# 旧部署元数据（OpenAI 托管项目 id，与 GitHub 发布无关）
+outputs/afterimage-studio/.openai/
+
+# 安卓本地配置与签名
+android/local.properties
+android/.idea/
+android/app/build/
+android/build/
+android/.gradle/
+android/key.properties
+*.jks
+*.keystore
+
+# 本地与个人内容
+work/
+.screenshots/
+.trae-html-share-packages/
+.vscode/
+.trae/
+ChatGPT对话.txt
+attachments/

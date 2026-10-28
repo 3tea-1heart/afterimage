@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">余像 AFTERIMAGE</string>
+    <string name="title_activity_main">余像 AFTERIMAGE</string>
+    <string name="package_name">studio.afterimage.app</string>
+    <string name="custom_url_scheme">studio.afterimage.app</string>
+</resources>
