@@ -2,7 +2,7 @@
 
 一个面向摄影成片、meme、复古图像和轻量平面设计的浏览器图像工坊。以可直接使用的风格配方为入口，保留图层、参数、文字和原始图片，允许进一步调整与组合。
 
-当前本地功能版本：**V10.14**。文档更新：**2026-10-29**。V10.1 渲染修复、V10.2 交互层、V10.3 成片质感、V10.4 动态与导出、V10.5 逐帧 WebM 与 GIF 导出、V10.6 导出渲染线程、V10.7 关键帧、V10.8 GIF 抖动、V10.9 拖动同步关键帧、V10.10 WebCodecs 离线视频、V10.11 GIF 误差扩散、V10.12 预览渲染缓存、V10.13 美术方向、V10.14 桌面 / 安卓封装与发布基建已完成。
+当前本地功能版本：**V10.15**。文档更新：**2026-10-29**。V10.1 渲染修复、V10.2 交互层、V10.3 成片质感、V10.4 动态与导出、V10.5 逐帧 WebM 与 GIF 导出、V10.6 导出渲染线程、V10.7 关键帧、V10.8 GIF 抖动、V10.9 拖动同步关键帧、V10.10 WebCodecs 离线视频、V10.11 GIF 误差扩散、V10.12 预览渲染缓存、V10.13 美术方向、V10.14 桌面 / 安卓封装与发布基建已完成。
 
 > 本文件是项目介绍、当前能力和更新历史的统一入口。以后每次修改功能、交互、视觉、性能、修复问题或调整文档，都必须同步更新本文件的更新日志。未完成、未验证、未发布的事项应明确标注。
 
@@ -29,7 +29,7 @@ npm install
 npm run dist:win
 ```
 
-产物为 `release/Afterimage-10.14.0-setup.exe`（安装包）与 `release/win-unpacked/AFTERIMAGE.exe`（免安装目录）。安装包未签名，首次运行可能出现 SmartScreen 提示。开发调试可直接 `npm start`，或 `npm run serve` 后用浏览器访问。
+产物为 `release/Afterimage-10.15.0-setup.exe`（安装包）与 `release/win-unpacked/AFTERIMAGE.exe`（免安装目录）。安装包未签名，首次运行可能出现 SmartScreen 提示。开发调试可直接 `npm start`，或 `npm run serve` 后用浏览器访问。
 
 ### 安卓版（Capacitor）
 
@@ -225,7 +225,7 @@ V10.14 本次实际执行（2026-10-29）：
 | 回归脚本 | 10 / 10 通过 | `verify-v8`、`verify-v8-templates`、`verify-v9-editing`、`verify-v9-templates`、`verify-v9-ui`、`verify-v10` 至 `verify-v14` 全部退出码 0；`verify-v4 / v5 / v6 / v4-ui / v6-ui / v8-ui` 仍是旧版本断言或 Node 24 下 `data:` URL 模块解析失败，与本轮无关 |
 | 资源与语法 | 通过 | 安卓 `AndroidManifest.xml`、`styles.xml`、`colors.xml`、两个自适应图标 XML、`file_paths.xml` 均可解析；`node --check app.js` 通过 |
 | `npx cap sync android` | 通过 | Web 资源同步到 `android/app/src/main/assets/public`，识别 `@capacitor/filesystem` 与 `@capacitor/share` |
-| `npm run dist:win` | 通过 | 在修正主进程路径校验后重新打包，产出 `release/Afterimage-10.14.0-setup.exe`（116.7 MB）与免安装目录 |
+| `npm run dist:win` | 通过 | 在修正主进程路径校验后重新打包，产出 `release/Afterimage-10.15.0-setup.exe`（116.7 MB）与免安装目录 |
 | `release/win-unpacked/AFTERIMAGE.exe` | 通过 | 修正后重新启动 6 秒，进程存活，窗口标题为「余像 AFTERIMAGE — 图像工坊」 |
 | Electron DOM 验收 | 通过 | 下载逻辑与主进程改动后重跑：标题正确、66 张配方卡、画布 600×300、页面无横向溢出，Syne / Space Mono / Space Grotesk 已加载；风格展厅 17 个逐字字符、跑马灯与滚动进度存在，Instrument Serif 在展厅开启后就绪，`ERRORS []`。控制台只有 Electron 45 对 `console-message` 旧签名的弃用提示，属测试脚本问题 |
 | 安卓 APK | 未执行 | 本机无 JDK / Android SDK，只完成资源生成与同步；APK 需由 GitHub Actions 构建 |
@@ -253,6 +253,19 @@ node work/verify-v8-templates.mjs
 ## 版本与更新历史
 
 按新到旧记录。缺少可靠日期的历史阶段不补造日期；V7 是并入 V8 的开发阶段，不表示存在独立发布包。
+
+### 2026-10-29 · V10.15 编辑与导出可靠性修复
+
+- 修复组合拖动误改组合外关键帧，组合成员关键帧跟随变换。
+- Worker 失败后清理实例并回退；增加 30 秒请求超时与取消中断。
+- 导出固定工程快照；原生保存等待写入结果；选择框使用真实几何位置。
+- 含文字或符号的导出等待页面字体并使用主线程，避免 Worker 字体不一致；代价是文字作品导出仍可能占用主线程。
+- 验证：现有渲染回归 10/10 通过；新增组合关键帧隔离、无关键帧锚点、重复变换和 Worker 失败回退检查通过；导出快照、字体等待和选择框进行了源码断言，未替代浏览器端到端测试。
+- Windows EXE 构建成功（未签名、尚未安装实测）；安卓资源同步成功，APK 尚待 CI 构建；GitHub 发布等待 CLI 授权配置恢复。
+- 修复 Electron 保存对话框异步返回前下载已继续的问题，改用同步选择保存路径。
+- 收尾复核（本机）：7 个改动脚本与 `desktop/main.cjs` 语法检查通过；11 个回归脚本全部退出码 0（`verify-v8` 至 `verify-v14`、`verify-v1015`）；安卓 `assets/public/app.js` 与 `dist` 哈希一致；`release/Afterimage-10.15.0-setup.exe` 与 `release/win-unpacked/AFTERIMAGE.exe` 均已产出。
+- 调色板导出补上失败提示：原生保存失败时不再静默无反馈。
+- 已知待改：`showSaveDialogSync` 会在对话框打开期间阻塞主进程；安卓端原生保存失败已改为抛错而非回退浏览器下载，其余调用点均已捕获。`outputs/V10.15-export-proof.png` 为本地验证图，未纳入仓库。
 
 ### 2026-10-29 · V10.14 离线资源、Electron 桌面版、Capacitor 安卓版与 GitHub 发布基建
 

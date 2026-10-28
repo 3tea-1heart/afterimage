@@ -91,12 +91,9 @@ function createWindow() {
 function setupDownloads(mainWindow) {
   session.defaultSession.on('will-download', (_event, item) => {
     const suggested = path.join(app.getPath('downloads'), item.getFilename());
-    dialog
-      .showSaveDialog(mainWindow, { title: '保存作品', defaultPath: suggested })
-      .then(({ canceled, filePath }) => {
-        if (canceled || !filePath) item.cancel();
-        else item.setSavePath(filePath);
-      });
+    const filePath = dialog.showSaveDialogSync(mainWindow, { title: '保存作品', defaultPath: suggested });
+    if (!filePath) item.cancel();
+    else item.setSavePath(filePath);
   });
 }
 

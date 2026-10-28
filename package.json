@@ -1,7 +1,7 @@
 {
   "name": "afterimage",
   "productName": "AFTERIMAGE 余像",
-  "version": "10.14.0",
+  "version": "10.15.0",
   "description": "余像 AFTERIMAGE — 在浏览器与本机运行的图像工坊：风格配方、图层、文字、动态与导出。",
   "license": "MIT",
   "author": "AFTERIMAGE",
@@ -41,7 +41,9 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "icon": "outputs/afterimage-studio/dist/icon.ico"
