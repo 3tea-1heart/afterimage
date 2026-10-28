@@ -261,11 +261,12 @@ node work/verify-v8-templates.mjs
 - 导出固定工程快照；原生保存等待写入结果；选择框使用真实几何位置。
 - 含文字或符号的导出等待页面字体并使用主线程，避免 Worker 字体不一致；代价是文字作品导出仍可能占用主线程。
 - 验证：现有渲染回归 10/10 通过；新增组合关键帧隔离、无关键帧锚点、重复变换和 Worker 失败回退检查通过；导出快照、字体等待和选择框进行了源码断言，未替代浏览器端到端测试。
-- Windows EXE 构建成功（未签名、尚未安装实测）；安卓资源同步成功，APK 尚待 CI 构建；GitHub 发布等待 CLI 授权配置恢复。
+- Windows EXE 构建成功（未签名、尚未安装实测）；安卓资源同步成功；GitHub 仓库已创建并推送。
 - 修复 Electron 保存对话框异步返回前下载已继续的问题，改用同步选择保存路径。
 - 收尾复核（本机）：7 个改动脚本与 `desktop/main.cjs` 语法检查通过；11 个回归脚本全部退出码 0（`verify-v8` 至 `verify-v14`、`verify-v1015`）；安卓 `assets/public/app.js` 与 `dist` 哈希一致；`release/Afterimage-10.15.0-setup.exe` 与 `release/win-unpacked/AFTERIMAGE.exe` 均已产出。
 - 调色板导出补上失败提示：原生保存失败时不再静默无反馈。
 - 已知待改：`showSaveDialogSync` 会在对话框打开期间阻塞主进程；安卓端原生保存失败已改为抛错而非回退浏览器下载，其余调用点均已捕获。`outputs/V10.15-export-proof.png` 为本地验证图，未纳入仓库。
+- GitHub 发布实测（2026-10-29）：仓库 <https://github.com/3tea-1heart/afterimage>，Pages <https://3tea-1heart.github.io/afterimage/> 返回 200 且标题为「余像 AFTERIMAGE — 图像工坊」；`v10.15.0` 标签触发 Release 工作流，windows / android / publish 三个 job 全部 success，附件为 `Afterimage-10.15.0-setup.exe`（122.4 MB）与 `Afterimage-v10.15.0-debug.apk`（5.29 MB）。APK 为 debug 签名，Electron 安装包未签名，正式分发前需补签名。
 
 ### 2026-10-29 · V10.14 离线资源、Electron 桌面版、Capacitor 安卓版与 GitHub 发布基建
 
