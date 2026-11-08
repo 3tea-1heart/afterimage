@@ -1,3 +1,5 @@
+import {validQuad} from './perspective.js';
+import {normalizeObjectConfig} from './object-config.js';
 import {EFFECTS} from './engine.js';
 export function validateProject(v){
  const fail=s=>{throw new Error(s)},color=/^#[0-9a-f]{6}$/i,id=/^[a-zA-Z0-9_-]{1,80}$/;
@@ -9,20 +11,26 @@ export function validateProject(v){
  if(!color.test(v.background)||!num(v.duration,1,30)||typeof v.transparent!=='boolean')fail('工程设置无效');
  const ids=new Set();
  for(const l of v.layers){
-  if(!l||!['image','text','sticker','shape'].includes(l.type)||!id.test(l.id)||ids.has(l.id))fail('图层类型或标识无效');ids.add(l.id);
+  if(!l||!['image','text','sticker','shape','adjustment'].includes(l.type)||!id.test(l.id)||ids.has(l.id))fail('图层类型或标识无效');ids.add(l.id);
   if(typeof l.name!=='string'||l.name.length>300)fail('图层名称无效');
   if(!num(l.x,-32768,32768)||!num(l.y,-32768,32768)||!num(l.w,1,32768)||!num(l.h,1,32768)||!num(l.rotation,-360,360)||!num(l.opacity,0,100)||!num(l.shadow??0,0,100))fail('图层参数无效');
   if(!['source-over','multiply','screen','overlay','soft-light','difference','lighter'].includes(l.blend))fail('混合模式无效');
   if(l.mask!==undefined){const m=l.mask;if(!m||!['none','ellipse','rect'].includes(m.type)||!num(m.x,-100,200)||!num(m.y,-100,200)||!num(m.w,1,200)||!num(m.h,1,200)||!num(m.feather,0,200)||typeof m.invert!=='boolean')fail('蒙版参数无效')}
-  if(l.timing!==undefined){const z=l.timing;if(!z||!num(z.start,0,30)||!num(z.end,0,30)||z.end-z.start<.049||!num(z.fadeIn,0,30)||!num(z.fadeOut,0,30))fail('时间片段无效')}
+  if(l.timing!==undefined){const z=l.timing;if(!z||!num(z.start,0,30)||!num(z.end,0,30)||z.end-z.start<.049||!num(z.fadeIn,0,30)||!num(z.fadeOut,0,30))fail('时间片段无效');for(const k of ['sourceStart','sourceEnd'])if(z[k]!==undefined&&!num(z[k],-30,60))fail('片段源时间无效')}
   if(l.motion!==undefined){const m=l.motion;if(!m||typeof m.enabled!=='boolean'||!num(m.dx,-4096,4096)||!num(m.dy,-4096,4096)||!num(m.rotation,-360,360)||!num(m.scale,10,300))fail('运动参数无效')}
   if(l.keyframes!==undefined){if(!Array.isArray(l.keyframes)||l.keyframes.length>60)fail('关键帧数量无效');
-   for(const k of l.keyframes){if(!k||!num(k.t,0,30)||!num(k.x,-32768,32768)||!num(k.y,-32768,32768)||!num(k.rotation,-360,360)||!num(k.scale,10,3000)||!num(k.opacity,0,100))fail('关键帧参数无效');if(k.ease!==undefined&&!['smooth','linear','hold'].includes(k.ease))fail('关键帧缓动无效')}}
+   for(const k of l.keyframes){if(!k||!num(k.t,0,30)||!num(k.x,-32768,32768)||!num(k.y,-32768,32768)||!num(k.rotation,-360,360)||!num(k.scale,10,3000)||!num(k.opacity,0,100))fail('关键帧参数无效');if(k.ease!==undefined&&!['smooth','linear','hold','easeIn','easeOut','sine'].includes(k.ease))fail('关键帧缓动无效')}}
   if(l.align!==undefined&&!['left','center','right'].includes(l.align)||l.wrap!==undefined&&typeof l.wrap!=='boolean'||l.lineHeight!==undefined&&!num(l.lineHeight,.5,3))fail('文字排版参数无效');
   if(l.glow!==undefined&&!num(l.glow,0,100)||l.textScaleX!==undefined&&!num(l.textScaleX,.2,3)||l.glowColor!==undefined&&!color.test(l.glowColor))fail('文字材质无效');
   if(l.groupId!==undefined&&!id.test(l.groupId))fail('分组标识无效');
   if(l.crop!==undefined&&(!l.crop||!num(l.crop.x,0,100)||!num(l.crop.y,0,100)||!num(l.crop.zoom,1,5)))fail('框内裁切参数无效');
   if(l.fit!==undefined&&!['cover','stretch'].includes(l.fit))fail('图片适配方式无效');
+  if(l.player!==undefined){const m=l.player;if(l.type!=='image'||!m||typeof m.title!=='string'||m.title.length>300||typeof m.artist!=='string'||m.artist.length>300||!['cloud','charcoal','rose'].includes(m.theme)||!color.test(m.accent)||!num(m.progress,0,1)||!num(m.duration,0,86400)||!num(m.volume,0,1)||typeof m.loop!=='boolean'||m.audio!==undefined&&(typeof m.audio!=='string'||m.audio.length>22000000||!/^data:audio\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=]+$/i.test(m.audio)))fail('音乐播放组件参数无效');}
+  if(l.quad!==undefined&&!validQuad(l.quad))fail('透视四角无效或交叉');
+  const selection=a=>a&&['rect','ellipse'].includes(a.type)&&['x0','y0','x1','y1'].every(k=>num(a[k],0,1))&&typeof a.invert==='boolean';
+  if(l.selection!==undefined&&!selection(l.selection))fail('选区无效');
+  if(l.paint!==undefined){if(l.type!=='image'||!Array.isArray(l.paint)||l.paint.length>200)fail('绘画笔触无效');for(const z of l.paint)if(!z||!['paint','erase','mosaic'].includes(z.tool)||!num(z.radius,.00001,.5)||!num(z.hardness,0,1)||!num(z.opacity,0,1)||!color.test(z.color)||!num(z.block,.001,.5)||!Array.isArray(z.points)||!z.points.length||z.points.length>4096||z.points.some(p=>!num(p.x,0,1)||!num(p.y,0,1))||z.selection!==undefined&&!selection(z.selection))fail('绘画笔触参数无效');}
+  if(l.heals!==undefined){if(l.type!=='image'||!Array.isArray(l.heals)||l.heals.length>500)fail('修复笔触无效');for(const h of l.heals)if(!h||!num(h.x,0,1)||!num(h.y,0,1)||!num(h.r,.00001,.5)||!num(h.strength,0,1)||typeof h.auto!=='boolean'||!['heal','clone'].includes(h.mode)||!h.auto&&(!num(h.sx,0,1)||!num(h.sy,0,1)))fail('修复笔触参数无效');}
   if(l.type==='image'){if(typeof l.src!=='string'||!/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/i.test(l.src))fail('工程只接受内嵌图片');}
   else if(!color.test(l.color))fail('图层颜色无效');
   if(l.type==='text'||l.type==='sticker'){
@@ -38,5 +46,6 @@ export function validateProject(v){
   for(const p of spec.params)if(!num(e.params?.[p.key],p.min,p.max))fail('效果参数超出范围');
   if(spec.color&&!color.test(e.color)||spec.color2&&!color.test(e.color2))fail('效果颜色无效');
  }
+ if(v.objectStudio!==undefined){if(!v.objectStudio||typeof v.objectStudio!=='object')fail('物件设置无效');v.objectStudio=normalizeObjectConfig(v.objectStudio)}
  return v;
 }

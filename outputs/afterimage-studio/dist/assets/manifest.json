@@ -1,0 +1,32 @@
+[
+  {
+    "file": "assets/boombox.glb",
+    "bytes": 10614184,
+    "sha256": "f8b918445ebdd006768232205a62f5182d2208ca57f84c6ccc084943c0bc8f15"
+  },
+  {
+    "file": "vendor/page-flip.js",
+    "bytes": 44058,
+    "sha256": "bbaca0bbef57a22bb66a3fc69d67baf9a17fb9a9c89ec9ed35e2b91abe4bd1e7"
+  },
+  {
+    "file": "vendor/PAGE-FLIP-LICENSE",
+    "bytes": 1063,
+    "sha256": "88d7b609a3be5efa2abe8648ddc35d5489579db5e06299545760df45c2c32d66"
+  },
+  {
+    "file": "vendor/GLTFLoader.js",
+    "bytes": 119634,
+    "sha256": "515e48b60852e33284cae6d0560fda59ad7e1d16956c88f207da5f83470b2bec"
+  },
+  {
+    "file": "vendor/BufferGeometryUtils.js",
+    "bytes": 36986,
+    "sha256": "f07a335d7603eb09a46536fd8492bcb7ae8ef9c99b9c06e9910b2958f0b87310"
+  },
+  {
+    "file": "vendor/RoomEnvironment.js",
+    "bytes": 5093,
+    "sha256": "d1883079b621491972d304d0b0737cd7e1ce0947ebf0233f46d900b3af61e4d4"
+  }
+]

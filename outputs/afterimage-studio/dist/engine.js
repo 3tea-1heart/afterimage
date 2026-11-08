@@ -1,3 +1,10 @@
+import {PHOTO_MOTION,PHOTO_PRESETS,applyPhotoMotion} from './photo-motion.js';
+import {drawMusicPlayer} from './music-player.js';
+import {paintedImage} from './painting.js';
+import {warp,documentQuad} from './perspective.js';
+import {repairedImage} from './retouch.js';
+import {MOTION_EFFECTS,applyMotionFx} from './motion-fx.js';
+import {GAME_EFFECTS,GAME_PRESETS,applyGameArt} from './game-art.js';
 import {cropRect} from './editing.js';
 import {MATERIAL_EFFECTS,applyMaterial} from './materials.js';
 import {ART_EFFECTS,ART_PRESETS,applyArt} from './art.js';
@@ -36,7 +43,7 @@ export const EFFECTS={
  cycle:{name:'色相循环',cat:'实验',icon:'◎',desc:'周期性变色，非索引色动画',params:[p('hue','起始色相',0,360,0),p('turns','每循环圈数',0,4,1),p('amount','混合强度',0,100,100)]},
  kaleido:{name:'镜像万花筒',cat:'实验',icon:'✺',desc:'用镜像扇区重组图像',params:[p('segments','扇区数量',2,12,6),p('rotation','旋转角度',0,360,0),p('speed','每循环圈数',0,2,0)]}
 };
-Object.assign(EFFECTS,MATERIAL_EFFECTS,ART_EFFECTS,EXTRA_EFFECTS,COLLECTION_EFFECTS,OPTICS_EFFECTS);
+Object.assign(EFFECTS,PHOTO_MOTION,MOTION_EFFECTS,GAME_EFFECTS,MATERIAL_EFFECTS,ART_EFFECTS,EXTRA_EFFECTS,COLLECTION_EFFECTS,OPTICS_EFFECTS);
 export const makeEffect=(type,params={})=>({id:crypto.randomUUID(),type,enabled:true,open:false,target:'all',params:Object.fromEntries(EFFECTS[type].params.map(x=>[x.key,x.value])),...((EFFECTS[type].color)?{color:EFFECTS[type].color}:{}),...((EFFECTS[type].color2)?{color2:EFFECTS[type].color2}:{}),...params});
 const fx=(type,params={},rest={})=>({type,params,...rest});
 export const PRESETS=[
@@ -53,7 +60,13 @@ export const PRESETS=[
  {name:'银盐幽灵',en:'SILVER GHOST',cat:'实验',chain:[fx('tone',{contrast:12,saturation:-100,warmth:0}),fx('solarize',{threshold:135,amount:90}),fx('duotone',{amount:70},{color:'#253440',color2:'#d3ded6'})]},
  {name:'酸性色流',en:'CHROMA DRIFT',cat:'实验',chain:[fx('tone',{contrast:20,saturation:50,warmth:0}),fx('cycle',{hue:25,turns:1,amount:100}),fx('grain',{amount:8,speed:0})]}
 ];
-PRESETS.push(...ART_PRESETS,...EXTRA_PRESETS,...COLLECTION_PRESETS,...OPTICS_PRESETS);
+PRESETS.push(...PHOTO_PRESETS,...GAME_PRESETS,...ART_PRESETS,...EXTRA_PRESETS,...COLLECTION_PRESETS,...OPTICS_PRESETS);
+PRESETS.push(
+{name:'余烬漂浮',en:'AFTER THE FIRE',cat:'实验',desc:'暖色胶片、漂浮火星与轻微暗角',chain:[fx('film',{amount:35,fade:7}),fx('embers',{amount:60,count:90,speed:1,seed:23}),fx('vignette',{amount:22,size:65})]},
+{name:'雨夜磁带',en:'RAIN ON TAPE',cat:'复古',desc:'冷调模拟影像与前景雨幕',chain:[fx('tone',{contrast:12,saturation:-20,warmth:-18}),fx('rainfall',{amount:65,count:180,speed:1,seed:33}),fx('grain',{amount:9,speed:0})]},
+{name:'浅景深梦游',en:'LIGHT IN SUSPENSION',cat:'摄影',desc:'柔光、低对比与漂移的景深光斑',chain:[fx('tone',{contrast:-8,saturation:-10,warmth:8}),fx('orton',{amount:16,radius:12}),fx('bokehdrift',{amount:65,count:30,speed:1,seed:43})]},
+{name:'纸屑庆典',en:'PAPER PARADE',cat:'实验',desc:'柔和彩纸、翻转与缓慢下落',chain:[fx('confetti',{amount:85,count:100,speed:1,seed:53})]}
+);
 export function buildChain(recipe){return recipe.chain.map(e=>{const o=makeEffect(e.type);return {...o,...e,id:crypto.randomUUID(),params:{...o.params,...e.params}}})}
 export const canvas=createSurface;
 const clamp=x=>Math.min(255,Math.max(0,x));
@@ -85,11 +98,11 @@ export function applyEffect(c,e,t=0,duration=5){if(!e.enabled)return c;const w=c
  case 'minimum':{const im=x.getImageData(0,0,w,h),a=im.data,b=new Uint8ClampedArray(a),r=Math.max(1,Math.round(p.radius*s));for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const i=(yy*w+xx)*4;for(let j=0;j<3;j++){let v=255;for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){const q=(Math.max(0,Math.min(h-1,yy+dy))*w+Math.max(0,Math.min(w-1,xx+dx)))*4;v=Math.min(v,b[q+j])}a[i+j]=v;}}x.putImageData(im,0,0);break;}
  case 'cycle':{const z=copy();x.save();x.clearRect(0,0,w,h);x.filter='none';x.globalAlpha=1-p.amount/100;x.drawImage(z,0,0);x.globalAlpha=p.amount/100;x.filter=`hue-rotate(${p.hue+t/duration*loopCycles(p.turns)*360}deg)`;x.globalCompositeOperation='lighter';x.drawImage(z,0,0);x.restore();break;}
  case 'kaleido':{const im=x.getImageData(0,0,w,h),a=im.data,b=new Uint8ClampedArray(a),sector=Math.PI*2/p.segments,rot=p.rotation*Math.PI/180+t/duration*loopCycles(p.speed)*Math.PI*2;for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const dx=xx-w/2,dy=yy-h/2,r=Math.hypot(dx,dy);let ang=((Math.atan2(dy,dx)+rot)%sector+sector)%sector;ang=Math.min(ang,sector-ang);const sx=Math.max(0,Math.min(w-1,Math.round(w/2+r*Math.cos(ang)))),sy=Math.max(0,Math.min(h-1,Math.round(h/2+r*Math.sin(ang)))),i=(yy*w+xx)*4,q=(sy*w+sx)*4;for(let j=0;j<4;j++)a[i+j]=b[q+j]}x.putImageData(im,0,0);break;}
- default:if(MATERIAL_EFFECTS[e.type])return applyMaterial(c,e);if(ART_EFFECTS[e.type])return applyArt(c,e);if(OPTICS_EFFECTS[e.type])return applyOptics(c,e,t,duration);return COLLECTION_EFFECTS[e.type]?applyCollection(c,e,t,duration):applyExtra(c,e,t,duration);
+ default:if(PHOTO_MOTION[e.type])return applyPhotoMotion(c,e,t,duration);if(MOTION_EFFECTS[e.type])return applyMotionFx(c,e,t,duration);if(GAME_EFFECTS[e.type])return applyGameArt(c,e,t,duration);if(MATERIAL_EFFECTS[e.type])return applyMaterial(c,e);if(ART_EFFECTS[e.type])return applyArt(c,e);if(OPTICS_EFFECTS[e.type])return applyOptics(c,e,t,duration);return COLLECTION_EFFECTS[e.type]?applyCollection(c,e,t,duration):applyExtra(c,e,t,duration);
  }return c;
 }
 export function drawLayer(ctx,l,assets,t,duration){l=layerPose(l,t,duration);ctx.save();ctx.translate(l.x,l.y);ctx.rotate(l.rotation*Math.PI/180);ctx.globalAlpha=l.opacity/100;ctx.globalCompositeOperation=l.blend||'source-over';if(l.shadow){ctx.shadowColor='#0009';ctx.shadowBlur=l.shadow;ctx.shadowOffsetX=l.shadow*.35;ctx.shadowOffsetY=l.shadow*.6;}
- if(l.type==='image'){const im=assets.get(l.src);if(im){if(l.fit==='cover'){const crop=cropRect(im,l);ctx.drawImage(im,crop.x,crop.y,crop.w,crop.h,-l.w/2,-l.h/2,l.w,l.h)}else ctx.drawImage(im,-l.w/2,-l.h/2,l.w,l.h)};}
+ if(l.type==='image'){const raw=assets.get(l.src),im=raw?paintedImage(repairedImage(raw,l.heals),l.paint,JSON.stringify(l.heals||[])):null;if(l.player){drawMusicPlayer(ctx,l,im);}else if(im){if(l.fit==='cover'){const crop=cropRect(im,l);ctx.drawImage(im,crop.x,crop.y,crop.w,crop.h,-l.w/2,-l.h/2,l.w,l.h)}else ctx.drawImage(im,-l.w/2,-l.h/2,l.w,l.h)};}
  else if(l.type==='text'||l.type==='sticker'){if(l.glow){ctx.shadowColor=l.glowColor||'#c5a953';ctx.shadowBlur=l.glow;}ctx.scale(l.textScaleX||1,1);ctx.fillStyle=l.color;ctx.strokeStyle=l.strokeColor||'#17231e';ctx.lineWidth=l.stroke||0;ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`${l.weight||700} ${l.fontSize}px ${l.font==='monospace'?'Consolas, Microsoft YaHei, monospace':l.font==='serif'?'SimSun, serif':'Arial, Microsoft YaHei, sans-serif'}`;const content=l.content||'';if(l.layout==='circle'){const chars=Array.from(content),radius=Math.max(20,l.w/2),off=l.animate?t/duration*Math.PI*2:0;chars.forEach((ch,i)=>{const a=-Math.PI/2+i*Math.PI*2/Math.max(chars.length,1)+off;ctx.save();ctx.translate(Math.cos(a)*radius,Math.sin(a)*radius);ctx.rotate(a+Math.PI/2);if(l.stroke)ctx.strokeText(ch,0,0);ctx.fillText(ch,0,0);ctx.restore()});}else{const lines=wrapLines(ctx,content,l.w,l.wrap!==false);ctx.textAlign=l.align||'center';lines.forEach((line,i)=>{const y=(i-(lines.length-1)/2)*l.fontSize*(l.lineHeight||1.35);if(l.animate){let chars=Array.from(line),width=ctx.measureText(line).width,xx=-width/2;for(let j=0;j<chars.length;j++){const cw=ctx.measureText(chars[j]).width,yy=y+Math.sin(j*.55+t/duration*Math.PI*2)*l.fontSize*.2;if(l.stroke)ctx.strokeText(chars[j],xx+cw/2,yy);ctx.fillText(chars[j],xx+cw/2,yy);xx+=cw}}else{const tx=l.align==='left'?-l.w/2:l.align==='right'?l.w/2:0;if(l.stroke)ctx.strokeText(line,tx,y);ctx.fillText(line,tx,y)}})}}
  else if(l.type==='shape'){ctx.fillStyle=l.color;ctx.strokeStyle=l.color;ctx.lineWidth=l.stroke||4;if(l.shape==='line'){ctx.beginPath();ctx.moveTo(-l.w/2,-l.h/2);ctx.lineTo(l.w/2,l.h/2);ctx.stroke();}else if(l.shape==='circle'){ctx.beginPath();ctx.ellipse(0,0,l.w/2,l.h/2,0,0,Math.PI*2);ctx.fill()}else ctx.fillRect(-l.w/2,-l.h/2,l.w,l.h);}
  ctx.restore();}
@@ -120,10 +133,10 @@ function effectSig(effects){
  return out;
 }
 function layerSig(l){
- return JSON.stringify({...l,x:0,y:0,rotation:0,opacity:100,blend:'source-over',motion:null,keyframes:null,timing:null,hidden:false,locked:false,src:l.src?(l.src.length+':'+l.src.slice(-32)):''});
+ return JSON.stringify({...l,player:l.player?{...l.player,audio:undefined}:undefined,x:0,y:0,rotation:0,opacity:100,blend:'source-over',motion:null,keyframes:null,timing:null,hidden:false,locked:false,src:l.src?(l.src.length+':'+l.src.slice(-32)):''});
 }
 // 只有带运动参数的效果与文字动画会随时间变化，其余效果在整个时间轴上是静态的。
-function timeBound(l,effects){
+function timeBound(l,effects){if(effects.some(e=>PHOTO_MOTION[e.type]&&e.params.speed>0))return true;
  if(l.animate)return true;
  for(const e of effects){const p=e.params||{};if(p.speed>0||(e.type==='cycle'&&p.turns>0))return true}
  return false;
@@ -140,7 +153,7 @@ function cachedLocal(key,build){
 export function render(doc,assets,maxSide=1000,t=0,bypass=false){
  const sc=Math.min(1,maxSide/Math.max(doc.width,doc.height)),w=Math.round(doc.width*sc),h=Math.round(doc.height*sc),c=canvas(w,h),ctx=c.getContext('2d',{willReadFrequently:true});
  if(!doc.transparent){ctx.fillStyle=doc.background;ctx.fillRect(0,0,w,h)}
- for(const source of doc.layers){const alpha=clipAlpha(source,t,doc.duration);if(source.hidden||alpha<=0)continue;const l={...source,opacity:source.opacity*alpha};const effects=bypass?[]:doc.effects.filter(e=>e.target===l.id&&e.enabled);const localTime=Math.max(0,t-(source.timing?.start||0));
+ for(const source of doc.layers){const alpha=clipAlpha(source,t,doc.duration);if(source.hidden||alpha<=0)continue;const evaluated=layerPose(source,t,doc.duration),l={...evaluated,opacity:evaluated.opacity*alpha,keyframes:undefined,motion:undefined};if(source.type==='adjustment'){if(bypass)continue;const adjusted=canvas(w,h);adjusted.getContext('2d').drawImage(c,0,0);doc.effects.filter(e=>e.target===source.id&&e.enabled).forEach(e=>applyEffect(adjusted,e,t,doc.duration));if(source.mask&&source.mask.type!=='none')applyLayerMask(adjusted,source,sc,t,doc.duration);if(!l.blend||l.blend==='source-over'){const original=ctx.getImageData(0,0,w,h),a=original.data,b=adjusted.getContext('2d').getImageData(0,0,w,h).data;for(let i=0;i<a.length;i+=4){const amount=l.opacity/100*(source.mask&&source.mask.type!=='none'?(a[i+3]?Math.min(1,b[i+3]/a[i+3]):0):1);for(let k=0;k<3;k++)a[i+k]=a[i+k]*(1-amount)+b[i+k]*amount;}ctx.putImageData(original,0,0);}else{ctx.save();ctx.globalAlpha=l.opacity/100;ctx.globalCompositeOperation=l.blend;ctx.drawImage(adjusted,0,0);ctx.restore();}continue;}const effects=bypass?[]:doc.effects.filter(e=>e.target===l.id&&e.enabled);const localTime=Math.max(0,t-(source.timing?.sourceStart??source.timing?.start??0));if(l.quad){const pose=layerPose(l,t,doc.duration),lw=Math.max(1,Math.min(4096,Math.round(pose.w))),lh=Math.max(1,Math.min(4096,Math.round(pose.h))),localLayer={...source,quad:undefined,x:lw/2,y:lh/2,w:lw,h:lh,rotation:0,opacity:100,blend:'source-over',motion:undefined,keyframes:undefined,timing:undefined},local=render({...doc,width:lw,height:lh,transparent:true,layers:[localLayer],effects:effects.map(e=>({...e,target:localLayer.id}))},assets,Math.max(1,Math.max(lw,lh)*sc),localTime,bypass),q=documentQuad(pose).map(([x,y])=>[x*sc,y*sc]),out=warp(local,q,w,h);ctx.save();ctx.globalAlpha=l.opacity/100;ctx.globalCompositeOperation=l.blend;ctx.drawImage(out,0,0);ctx.restore();continue;}
   if(effects.length){
    const pose=layerPose(l,t,doc.duration),lw=Math.max(1,Math.round(pose.w*sc)),lh=Math.max(1,Math.round(pose.h*sc)),pad=Math.ceil(Math.max(0,...effects.map(effectPad))*(lw/1200))+2;
    const key=layerSig(source)+'#'+effectSig(effects)+'#'+lw+'x'+lh+'+'+pad+'+'+Math.round(sc*1000)+'+'+doc.duration+'#'+(timeBound(source,effects)?Math.round(localTime*30)/30:0);

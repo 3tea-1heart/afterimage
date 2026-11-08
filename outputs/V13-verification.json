@@ -1,0 +1,90 @@
+{
+  "version": "13.0",
+  "date": "2026-11-09",
+  "integration": {
+    "presetScroll": {
+      "before": {
+        "y": 0,
+        "lib": 900
+      },
+      "after": {
+        "y": 0,
+        "lib": 900
+      }
+    },
+    "effectLayout": {
+      "horizontal": false,
+      "items": 72
+    },
+    "resize": {
+      "initialLib": 273,
+      "widened": 403,
+      "timeline": 274
+    },
+    "focus": {
+      "library": "none",
+      "inspector": "none",
+      "rail": "none",
+      "main": 1584,
+      "workspace": 1584
+    },
+    "history": {
+      "nodes": 7,
+      "retainedBranch": true,
+      "marked": true
+    },
+    "filePool": {
+      "referenced": 1,
+      "raw": 0
+    },
+    "heal": {
+      "strokes": 1,
+      "center": 153
+    },
+    "manualSource": true,
+    "worker": {
+      "differing": 0,
+      "pngBytes": 15778,
+      "width": 160,
+      "height": 160
+    },
+    "projects": {
+      "open": 3,
+      "closeReopen": true,
+      "reloaded": true
+    },
+    "mobile": {
+      "pageOverflow": false,
+      "libraryOverflow": false,
+      "grips": 3
+    },
+    "errors": [],
+    "pass": true
+  },
+  "extra": {
+    "inspectorScroll": {
+      "before": 150,
+      "after": 150
+    },
+    "lockUndo": true,
+    "intensityUndo": true,
+    "separatorKeyboard": true,
+    "mobileHeight": true,
+    "pass": true
+  },
+  "browserReview": {
+    "focusMode": true,
+    "adjustmentHistory": true,
+    "repairPanel": true,
+    "consoleErrors": 0
+  },
+  "batchCentering": {
+    "width": 1200,
+    "height": 800,
+    "imageCenter": [
+      600,
+      400
+    ],
+    "pass": true
+  }
+}

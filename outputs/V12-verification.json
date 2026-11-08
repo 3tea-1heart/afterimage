@@ -1,0 +1,95 @@
+{
+  "layout": {
+    "width": 1584,
+    "overflow": false,
+    "main": "58px 274px 958px 294px",
+    "library": {
+      "x": 58,
+      "y": 54,
+      "width": 274,
+      "height": 857,
+      "top": 54,
+      "right": 332,
+      "bottom": 911,
+      "left": 58
+    },
+    "workspace": {
+      "x": 332,
+      "y": 54,
+      "width": 958,
+      "height": 857,
+      "top": 54,
+      "right": 1290,
+      "bottom": 911,
+      "left": 332
+    }
+  },
+  "apiAtStart": {
+    "api": true
+  },
+  "asset": {
+    "vertices": 3575,
+    "maps": 1
+  },
+  "studio": {
+    "open": true,
+    "status": "已恢复物件",
+    "surfaces": 2
+  },
+  "export": {
+    "downloads": [
+      {
+        "name": "余像-物件-player-1794145752580.png",
+        "size": 3309933,
+        "type": "image/png"
+      }
+    ],
+    "status": "PNG 下载已发起 · 2400 × 2400"
+  },
+  "video": {
+    "downloads": [
+      {
+        "name": "余像-物件-player-1794145752580.png",
+        "size": 3309933,
+        "type": "image/png"
+      },
+      {
+        "name": "余像-物件-player.webm",
+        "size": 3068773,
+        "type": "video/webm"
+      }
+    ],
+    "status": "6秒 / 24fps / 800px WebM 已导出（无声、实色背景）"
+  },
+  "book": {
+    "open": true,
+    "page": "1 / 6",
+    "saved": {
+      "pages": 7,
+      "text": true
+    }
+  },
+  "cleanup": true,
+  "beforeBridgeErrors": [],
+  "bridgeState": {
+    "settings": {
+      "theme": "neutral",
+      "api": true
+    },
+    "api": "12.0",
+    "session": true
+  },
+  "bridge": {
+    "project": true,
+    "commands": true,
+    "png": true,
+    "unauthorized": 401,
+    "crossOrigin": 403
+  },
+  "mobile": {
+    "width": 374,
+    "overflow": false
+  },
+  "cli": true,
+  "errors": []
+}

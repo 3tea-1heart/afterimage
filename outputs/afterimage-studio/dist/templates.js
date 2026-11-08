@@ -1,6 +1,6 @@
 import {buildChain,PRESETS,makeEffect} from './engine.js';
 export const TEMPLATES=[['eva','终幕 / 大字宣言','黑底宋体 · 非对称排版'],['post','一条影像动态','社交帖子 · 图片居中'],['memory','Best memories 2008','旧相册 · 底部题签'],['phone','未发送的短信','绿色液晶屏 · 图片与文字'],['game','存档点 1998','古早游戏 · 像素对白'],['millennium','千禧街角','冷淡柔焦 · 宽白边'],['album','独立专辑 / SIDE A','方形封面 · 编号与曲目'],['collage','剪贴日记','照片拼贴 · 胶带与纸签']];
-export const PATCHES=[['dialog','RPG 对话框'],['window','经典系统窗口'],['selection','蓝色选区贴纸'],['frame','拍立得相框'],['filmframe','电影画框']];
+export const PATCHES=[['rarecard','珍藏卡框'],['quest','任务提示条'],['savepoint','动态存档信标'],['embers','漂浮火星贴纸'],['pixelbot','像素机器人'],['starbadge','闪烁稀有徽章'],['dialog','RPG 对话框'],['window','经典系统窗口'],['selection','蓝色选区贴纸'],['frame','拍立得相框'],['filmframe','电影画框']];
 export function composeTemplate(key,source,make){
  const layers=[],effects=[];let W=1200,H=1200,bg='#eee9de';
  const shape=(name,x,y,w,h,color,extra={})=>{const l=make('shape',{name,x,y,w,h,color,shape:'rect',...extra});layers.push(l);return l};
@@ -17,6 +17,11 @@ export function composeTemplate(key,source,make){
  return {width:W,height:H,background:bg,layers,effects};
 }
 export function composePatch(key,W,H,make){const a=[],s=Math.min(W,H),x=W/2,y=H*.72,w=W*.78,h=s*.24;const rect=(name,x,y,w,h,color,opacity=100)=>a.push(make('shape',{name,x,y,w,h,color,opacity,shape:'rect'}));const txt=(content,x,y,w,size,color)=>a.push(make('text',{name:content,content,x,y,w,h:size*2,fontSize:Math.max(8,size),font:'monospace',weight:500,color,stroke:0,strokeColor:'#000000',layout:'normal',animate:false}));
+ if(key==='rarecard'){const edge=s*.025;for(const [xx,yy,ww,hh] of [[x,y-h,w,edge],[x,y+h,w,edge],[x-w/2,y,edge,h*2],[x+w/2,y,edge,h*2]])rect('珍藏卡金边',xx,yy,ww,hh,'#d5b878');txt('RARE / 001     ✦',x,y+h*.8,w*.9,s*.035,'#f5dba1');}
+ if(key==='quest'){rect('任务底板',x,y,w,h*.65,'#182c38',90);rect('任务标记',x-w*.46,y,s*.012,h*.65,'#eac487');txt('NEW QUEST / 在此写下你的任务',x,y,w*.85,s*.032,'#f2e7c9');}
+ if(key==='pixelbot'){const unit=s*.02,pattern=['00111100','01111110','11011011','11111111','00111100','01100110'];pattern.forEach((row,j)=>Array.from(row).forEach((v,i)=>{if(v==='1')rect('机器人像素',x+(i-3.5)*unit,y+(j-2.5)*unit,unit,unit,j===2?'#ecf5c7':'#78ae9d')}));}
+ if(key==='savepoint'||key==='starbadge'){txt(key==='savepoint'?'◇':'✦',x,y,s*.22,s*.15,'#bdebd3');a.at(-1).animate=true;a.at(-1).motion={enabled:true,dx:0,dy:-s*.025,rotation:0,scale:110};txt(key==='savepoint'?'SAVE / 回忆已记录':'RARE / 特别的一刻',x,y+s*.12,w,s*.025,'#f2e7c9');}
+ if(key==='embers'){for(let k=0;k<8;k++){rect('上升火星',W*(.15+k*.1),H*(.4+(k%3)*.12),s*.006,s*.012,k%2?'#ffb34b':'#ff7947');a.at(-1).motion={enabled:true,dx:s*.03,dy:-s*.2,rotation:35,scale:60};}}
  if(key==='selection'){rect('蓝色透明选区',x,y,w*.7,h*.4,'#3989ed',38);for(const dx of [-w*.35,w*.35]){rect('选区光标',x+dx,y,Math.max(2,s*.004),h*.55,'#287ce0');a.push(make('shape',{name:'选区手柄',x:x+dx,y:y+(dx<0?-1:1)*h*.3,w:s*.025,h:s*.025,color:'#287ce0',shape:'circle'}));}}
  if(key==='dialog'||key==='window'){rect('窗口边框',x,y,w,h,'#eeeeee');rect('窗口内容',x,y,w-s*.015,h-s*.015,key==='dialog'?'#141d42':'#d7d7d0');if(key==='window'){rect('标题栏',x,y-h*.36,w-s*.03,h*.2,'#142c87');txt('MEMORY.EXE     _ □ ×',x,y-h*.36,w*.95,s*.025,'#ffffff');}txt('在这里写下你的对白。  ▼',x,y+h*.08,w*.9,s*.04,key==='dialog'?'#ffffff':'#202020');}
  if(key==='frame'||key==='filmframe'){const b=s*(key==='frame'?.06:.11),c=key==='frame'?'#faf8ef':'#111111';rect('上框',W/2,b/2,W,b,c);rect('下框',W/2,H-b/2,W,b,c);if(key==='frame'){rect('左框',b/2,H/2,b,H,c);rect('右框',W-b/2,H/2,b,H,c);}}

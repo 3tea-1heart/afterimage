@@ -43,3 +43,6 @@ export async function loadDraft() {
 export async function clearDraft() {
   try { await run('readwrite', s => s.delete(KEY)); return true; } catch { return false; }
 }
+
+export async function saveWorkspace(bundle){try{await run('readwrite',s=>s.put(bundle,'workspace-v13'));return true}catch{return false}}
+export async function loadWorkspace(){try{const db=await openDb();return await new Promise((resolve,reject)=>{const r=db.transaction(STORE,'readonly').objectStore(STORE).get('workspace-v13');r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error)})}catch{return null}}
