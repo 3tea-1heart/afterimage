@@ -48,44 +48,5 @@
       "name": "close prompt cancel/skip and manual baseline remains independent",
       "pass": true
     }
-  ],
-  "syntax": {
-    "passed": 37,
-    "total": 37,
-    "failed": []
-  },
-  "regression": {
-    "render": "10/10",
-    "historyRepairAdjustment": "pass",
-    "apiAtomicBatch": "pass",
-    "downloadedHistoryAndBaseline": "pass"
-  },
-  "browserReview": {
-    "projectCloseCancelAndSkip": true,
-    "manualDownload": true,
-    "allDownloadedHistorySnapshotsValidated": true,
-    "autosaveReloadRecovery": true,
-    "perspectiveCornerDrag": true,
-    "blankCanvasPaint": true,
-    "revertBaselineAndUndo": true,
-    "themeAndRightLayout": true,
-    "neumorphicMusicLayer": true,
-    "audioPlaybackSeconds": 8,
-    "audioSeekSeconds": 4,
-    "consoleErrorsAfterFix": 0,
-    "narrowViewport": {
-      "clientWidth": 380,
-      "scrollWidth": 380
-    },
-    "screenshots": [
-      "V14-workbench.png",
-      "V14-mobile.png"
-    ]
-  },
-  "limits": [
-    "No forced-crash or storage-quota fault test",
-    "Audio not muxed in video exports; card records a chosen progress frame",
-    "Perspective can clip out-of-bounds layer glow",
-    "Round brush workspace capped at 3072px, 200 strokes per image"
   ]
 }
