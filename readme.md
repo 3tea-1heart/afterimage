@@ -1,14 +1,14 @@
 # 余像 AFTERIMAGE
 
-一个面向摄影成片、meme、复古图像和轻量平面设计的浏览器图像工坊。以可直接使用的风格配方为入口，保留图层、参数、文字和原始图片，允许进一步调整与组合。
+一个开源的浏览器图像工坊，面向摄影成片、meme 与复古风格、轻量平面设计。以「一键风格配方」为入口，同时保留图层、参数、文字和原始图片，可自由调整与组合；全部在本地浏览器运行、无需上传。
 
-当前本地功能版本：**V14.0**。文档更新：**2026-11-09**。V10.1 渲染修复、V10.2 交互层、V10.3 成片质感、V10.4 动态与导出、V10.5 逐帧 WebM 与 GIF 导出、V10.6 导出渲染线程、V10.7 关键帧、V10.8 GIF 抖动、V10.9 拖动同步关键帧、V10.10 WebCodecs 离线视频、V10.11 GIF 误差扩散、V10.12 预览渲染缓存、V10.13 美术方向、V10.14 桌面 / 安卓封装与发布基建已完成。
+当前版本 **V14.0**（文档更新于 2026-11-09）。历次版本与修复详见文末「更新日志」。
 
-> 本文件是项目介绍、当前能力和更新历史的统一入口。以后每次修改功能、交互、视觉、性能、修复问题或调整文档，都必须同步更新本文件的更新日志。未完成、未验证、未发布的事项应明确标注。
+> 本文档同时是功能总览与更新历史入口；未完成、未验证或未发布的部分都会以文字明确标注。
 
 ## 快速开始
 
-1. 安装或准备 Node.js。本机启动器优先使用 `E:\NodeJS\node.exe`，不存在时使用 PATH 中的 `node`。
+1. 安装 [Node.js](https://nodejs.org/)。启动器会自动查找可用的 `node`。
 2. 双击 [Start-Afterimage.cmd](outputs/Start-Afterimage.cmd)，保持服务窗口开启。
 3. 在浏览器访问 <http://127.0.0.1:4173/>。推荐使用支持 Canvas 与 MediaRecorder 的桌面 Chrome / Edge。
 4. 导入照片，选中图层，再应用风格配方或模板。
@@ -29,7 +29,7 @@ npm install
 npm run dist:win
 ```
 
-产物为 `release/Afterimage-10.15.0-setup.exe`（安装包）与 `release/win-unpacked/AFTERIMAGE.exe`（免安装目录）。安装包未签名，首次运行可能出现 SmartScreen 提示。开发调试可直接 `npm start`，或 `npm run serve` 后用浏览器访问。
+产物为 `release/Afterimage-14.0.0-setup.exe`（安装包）与 `release/win-unpacked/AFTERIMAGE.exe`（免安装目录）。安装包未签名，首次运行可能出现 SmartScreen 提示。开发调试可直接 `npm start`，或 `npm run serve` 后用浏览器访问。
 
 ### 安卓版（Capacitor）
 
